@@ -1,6 +1,6 @@
 # MoodleGrades
 Scripts permettant de générer une page web afin de visualiser ses différentes notes Moodle. \
-Pour l'instant, seules les notes de TP5A-APP-A sont disponibles.
+Pour l'instant, seules les notes du TP5A-APP-A sont disponibles.
 
 ## Utilisation :
 - Mettre ses ids dans [id.txt](./id.txt) ('IDENTIFIANT A REMPLACER' et 'MOT DE PASSE A REMPLACER' ) \
