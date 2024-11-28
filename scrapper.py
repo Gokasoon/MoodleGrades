@@ -74,6 +74,12 @@ try:
                 if evaluation_name == "Note calculéeTotal du cours" :
                     continue
 
+                if evaluation_name == "Élément manuelInterrogation en TP" :
+                    evaluation_name = "Interrogation en TP"
+
+                if "DevoirActivité" in evaluation_name :
+                    evaluation_name = evaluation_name.replace("DevoirActivité", "Activité")
+
                 max_value = range_value.split("–")[1].strip()
 
                 courses_notes[course_name].append({
@@ -101,57 +107,61 @@ html_content = f"""
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         body {{
             font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #0D1117;
         }}
         table {{
             width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }}
-        th, td {{
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }}
-        th {{
-            background-color: #f4f4f4;
+            margin-top: 20px;
         }}
     </style>
 </head>
 <body>
-    <h1>Notes</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Évaluation</th>
-                <th>Note</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container">
+        <h1 class="my-4" style="color: #8512d7; font-weight: bold;">Notes {user_id}</h1>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Évaluation</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
 """
 
 for course_name, notes in courses_notes.items():
     html_content += f"""
         <tr>
-            <th colspan="3" style="text-align: left; background-color: #f0f0f0;">{course_name}</th>
+            <td colspan="3" class="table-primary-dark" style="color: #8512d7; font-weight: bold;">{course_name}</td>
         </tr>
     """
     for note in notes:
         html_content += f"""
             <tr>
-                <td>{note['evaluation']}</td>
-                <td>{note['grade']} / {note['max']} </td>
+                <td style="padding-left: 20px;">{note['evaluation']}</td>
+                <td style="font-weight: bold;">{note['grade']} / {note['max']}</td>
             </tr>
         """
 
 html_content += """
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </body>
 </html>
 """
+
 
 output_file = "notes.html"
 with open(output_file, "w", encoding="utf-8") as file:
