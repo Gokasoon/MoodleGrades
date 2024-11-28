@@ -123,7 +123,7 @@ html_content = f"""
 </head>
 <body>
     <div class="container">
-        <h1 class="my-4" style="color: #8512d7; font-weight: bold;">Notes {user_id}</h1>
+        <h1 class="my-4" style="color: #FF00FF; font-weight: bold;">Notes {user_id}</h1>
         <div class="table-responsive">
             <table class="table table-dark table-striped table-bordered">
                 <thead class="table-dark">
@@ -138,7 +138,7 @@ html_content = f"""
 for course_name, notes in courses_notes.items():
     html_content += f"""
         <tr>
-            <td colspan="3" class="table-primary-dark" style="color: #8512d7; font-weight: bold;">{course_name}</td>
+            <td colspan="3" class="table-primary-dark" style="color: #FF00FF; font-weight: bold;">{course_name}</td>
         </tr>
     """
     for note in notes:
