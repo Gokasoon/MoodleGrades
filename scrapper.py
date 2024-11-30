@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import time
 import html
 import tkinter as tk
-from tkinter import messagebox, simpledialog, scrolledtext
+from tkinter import messagebox, scrolledtext
 
 class URLInputApp:
     def __init__(self, master):
