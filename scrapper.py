@@ -5,45 +5,87 @@ from bs4 import BeautifulSoup
 import time
 import html
 import tkinter as tk
-from tkinter import messagebox, scrolledtext
+from tkinter import messagebox, ttk, scrolledtext
 
 class URLInputApp:
     def __init__(self, master):
         self.master = master
         master.title("Moodle Notes Scraper")
-        master.geometry("750x500")
+        master.geometry("600x600")
         master.configure(bg='#0D1117')
+
+        # Predefined configurations
+        self.configurations = {
+            'TP5A-APP-A': {
+                'login_url': 'https://cours.iut-orsay.fr/login/index.php',
+                'notes_urls': [
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3482", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3463", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3810", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3812", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3795", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3639",
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3416", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3588", 
+                    "https://cours.iut-orsay.fr/grade/report/user/index.php?id=3599"
+                ],
+                'id_file': 'id.txt'
+            },
+            'Custom': {
+                'login_url': '',
+                'notes_urls': [],
+                'id_file': 'id.txt'
+            }
+        }
+
+        # Configuration Dropdown
+        tk.Label(master, text="Configuration:", fg='white', bg='#0D1117').pack(pady=(10,0))
+        self.config_var = tk.StringVar()
+        self.config_dropdown = ttk.Combobox(master, textvariable=self.config_var, 
+                                            values=list(self.configurations.keys()), 
+                                            state="readonly", width=47)
+        self.config_dropdown.set('TP5A-APP-A')  # Default selection
+        self.config_dropdown.pack(pady=5)
+        self.config_dropdown.bind('<<ComboboxSelected>>', self.on_config_select)
 
         # Login URL Input
         tk.Label(master, text="Login URL:", fg='white', bg='#0D1117').pack(pady=(10,0))
         self.login_url_entry = tk.Entry(master, width=50)
-        self.login_url_entry.insert(0, "https://cours.iut-orsay.fr/login/index.php")
         self.login_url_entry.pack(pady=5)
 
         # Notes URLs Input
         tk.Label(master, text="Notes URLs (one per line):", fg='white', bg='#0D1117').pack(pady=(10,0))
-        self.notes_urls_text = scrolledtext.ScrolledText(master, height=10, width=75)
-        self.notes_urls_text.insert(tk.END, """https://cours.iut-orsay.fr/grade/report/user/index.php?id=3482
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3463
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3810
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3812
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3795
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3639
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3416
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3588
-https://cours.iut-orsay.fr/grade/report/user/index.php?id=3599""")
+        self.notes_urls_text = scrolledtext.ScrolledText(master, height=10, width=50)
         self.notes_urls_text.pack(pady=5)
 
         # ID File Input
         tk.Label(master, text="ID File Path:", fg='white', bg='#0D1117').pack(pady=(10,0))
         self.id_file_entry = tk.Entry(master, width=50)
-        self.id_file_entry.insert(0, "id.txt")
         self.id_file_entry.pack(pady=5)
 
         # Scrape Button
         self.scrape_button = tk.Button(master, text="Scrape Notes", command=self.scrape_notes, 
                                        bg='#FF00FF', fg='white')
         self.scrape_button.pack(pady=20)
+
+        # Initial population
+        self.on_config_select()
+
+    def on_config_select(self, event=None):
+        # Get selected configuration
+        selected_config = self.config_var.get()
+        config = self.configurations[selected_config]
+
+        # Populate fields
+        self.login_url_entry.delete(0, tk.END)
+        self.login_url_entry.insert(0, config['login_url'])
+
+        self.notes_urls_text.delete('1.0', tk.END)
+        if selected_config == 'TP5A-APP-A':
+            self.notes_urls_text.insert(tk.END, "\n".join(config['notes_urls']))
+        
+        self.id_file_entry.delete(0, tk.END)
+        self.id_file_entry.insert(0, config['id_file'])
 
     def scrape_notes(self):
         # Retrieve inputs
