@@ -12,7 +12,7 @@ class URLInputApp:
     def __init__(self, master):
         self.master = master
         master.title("Moodle Notes Scraper")
-        master.geometry("600x600")
+        master.geometry("750x600")
         master.configure(bg='#0D1117')
 
         # Predefined configurations
@@ -56,7 +56,7 @@ class URLInputApp:
 
         # Notes URLs Input
         tk.Label(master, text="Notes URLs (one per line):", fg='white', bg='#0D1117').pack(pady=(10,0))
-        self.notes_urls_text = scrolledtext.ScrolledText(master, height=10, width=50)
+        self.notes_urls_text = scrolledtext.ScrolledText(master, height=10, width=75)
         self.notes_urls_text.pack(pady=5)
 
         # ID File Input
