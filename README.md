@@ -10,3 +10,9 @@ Pour l'instant, seules les notes du TP5A-APP-A sont disponibles.
 
 ## Screen :
 ![screenPageWeb](./screen.png)
+
+## TODO
+- Tt fetch et afficher par semestre ?
+- Dropbox cours
+- Config par annee 
+- Config par semestre
