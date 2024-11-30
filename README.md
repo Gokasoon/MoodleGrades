@@ -1,18 +1,5 @@
 # MoodleGrades
-Scripts permettant de générer une page web afin de visualiser ses différentes notes Moodle. \
-Pour l'instant, seules les notes du TP5A-APP-A sont disponibles.
-
-## Utilisation :
-- Mettre ses ids dans [id.txt](./id.txt) ('IDENTIFIANT A REMPLACER' et 'MOT DE PASSE A REMPLACER' ) \
-- Lancer le script [scrapper.py](./scrapper.py) 
-- Attendre la fin d'execution
-- Ouvrir dans un navigateur web la page [notes.html](notes.html) fraîchement  générées
+Scripts permettant de générer une page web afin de visualiser ses différentes notes Moodle. 
 
 ## Screen :
 ![screenPageWeb](./screen.png)
-
-## TODO
-- Tt fetch et afficher par semestre ?
-- Dropbox cours
-- Config par annee 
-- Config par semestre
