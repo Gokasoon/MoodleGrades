@@ -6,6 +6,7 @@ import time
 import html
 import tkinter as tk
 from tkinter import messagebox, ttk, scrolledtext
+import re
 
 class URLInputApp:
     def __init__(self, master):
@@ -157,7 +158,10 @@ class URLInputApp:
                                 continue
 
                             if "Analyse de l'évaluation" in grade:
-                                grade = grade.replace("Analyse de l'évaluation", "").strip()
+                                grade = grade.replace("Analyse de l'évaluation", "")
+
+                            if not grade.isdigit(): # Keep only digits
+                                grade = ''.join(re.findall(r'[\d,]+', grade))
 
                             if "Élément manuel" in evaluation_name:
                                 evaluation_name = evaluation_name.replace("Élément manuel", "")
@@ -179,63 +183,143 @@ class URLInputApp:
 
             # Generate HTML
             html_content = f"""
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Notes</title>
-                <script src="https://cdn.tailwindcss.com"></script>
-                <script>
-                    tailwind.config = {{
-                        theme: {{
-                            extend: {{
-                                colors: {{
-                                    'dark-bg': '#0D1117',
-                                    'accent-pink': '#FF00FF'
-                                }}
-                            }}
-                        }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {{
+            theme: {{
+                extend: {{
+                    colors: {{
+                        'dark-bg': '#0D1117',
+                        'accent-pink': '#FF00FF'
                     }}
-                </script>
-            </head>
-            <body class="bg-dark-bg text-white font-sans p-6">
-                <div class="container mx-auto max-w-4xl">
-                    <h1 class="text-3xl font-bold mb-6 text-accent-pink">Notes {user_id}</h1>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr class="bg-gray-800">
-                                    <th class="p-3 text-left">Évaluation</th>
-                                    <th class="p-3 text-left">Note</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            """
+                }}
+            }}
+        }}
+    </script>
+    <style>
+        .course-details {{
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, display 0.3s;
+        }}
+        .course-details.expanded {{
+            display: table-row;
+            max-height: 500px;
+        }}
+    </style>
+</head>
+<body class="bg-dark-bg text-white font-sans p-6">
+    <div class="container mx-auto max-w-4xl">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-accent-pink">Notes {user_id}</h1>
+            <button 
+                onclick="toggleAllCourses()" 
+                class="bg-accent-pink text-dark-bg px-3 py-1 rounded text-sm hover:opacity-80 transition-opacity"
+            >
+                Tout développer / Réduire
+            </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-gray-800">
+                        <th class="p-3 text-left">Cours</th>
+                        <th class="p-3 text-right">Détails</th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
 
+            course_id_counter = 0
             for course_name, notes in courses_notes.items():
+                # Generate a unique ID for each course
+                course_id = f"course-{course_id_counter}"
+                course_id_counter += 1
+
                 html_content += f"""
-                                <tr class="bg-gray-900">
-                                    <td colspan="2" class="p-3 font-bold text-accent-pink">{course_name}</td>
+                    <tr class="bg-gray-900 cursor-pointer hover:bg-gray-800" onclick="toggleCourse('{course_id}')">
+                        <td class="p-3 font-bold text-accent-pink">{course_name}</td>
+                        <td class="p-3 text-right text-sm text-gray-400">
+                            <span class="toggle-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr id="{course_id}" class="course-details bg-gray-800">
+                        <td colspan="2">
+                            <table class="w-full">
+    """
+    
+                if notes:
+                    for note in notes:
+                        html_content += f"""
+                                            <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+                                                <td class="p-3 pl-6">{note['evaluation']}</td>
+                                                <td class="p-3 font-bold text-right whitespace-nowrap">{note['grade']} / {note['max']}</td>
+                                            </tr>
+                        """
+                else:
+                    html_content += f"""
+                                            <tr>
+                                                <td colspan="2" class="p-3 text-center text-gray-500">Aucune note disponible</td>
+                                            </tr>
+                    """
+                
+                html_content += """
+                                        </table>
+                                    </td>
                                 </tr>
                 """
-                for note in notes:
-                    html_content += f"""
-                                <tr class="border-b border-gray-700 hover:bg-gray-800 transition-colors">
-                                    <td class="p-3 pl-6">{note['evaluation']}</td>
-                                    <td class="p-3 font-bold">{note['grade']} / {note['max']}</td>
-                                </tr>
-                    """
 
             html_content += """
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleCourse(courseId) {
+            const courseDetails = document.getElementById(courseId);
+            const toggleIcon = courseDetails.previousElementSibling.querySelector('.toggle-icon');
+            
+            if (courseDetails.classList.contains('expanded')) {
+                courseDetails.classList.remove('expanded');
+                toggleIcon.textContent = '▶';
+            } else {
+                courseDetails.classList.add('expanded');
+                toggleIcon.textContent = '▼';
+            }
+        }
+
+        function toggleAllCourses() {
+            const courseDetails = document.querySelectorAll('.course-details');
+            const toggleIcons = document.querySelectorAll('.toggle-icon');
+            
+            // Check if most courses are currently collapsed
+            const mostCollapsed = Array.from(courseDetails).some(course => !course.classList.contains('expanded'));
+            
+            courseDetails.forEach((course, index) => {
+                if (mostCollapsed) {
+                    // Expand all
+                    course.classList.add('expanded');
+                    toggleIcons[index].textContent = '▼';
+                } else {
+                    // Collapse all
+                    course.classList.remove('expanded');
+                    toggleIcons[index].textContent = '▶';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+"""
 
             output_file = "notes.html"
             with open(output_file, "w", encoding="utf-8") as file:
