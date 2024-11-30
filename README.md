@@ -1,5 +1,5 @@
 # MoodleGrades
-Scripts permettant de générer une page web afin de visualiser ses différentes notes Moodle. 
+Script permettant de générer une page web afin de visualiser ses différentes notes Moodle. 
 
 ## Screen :
 ![screenPageWeb](./screen.png)
