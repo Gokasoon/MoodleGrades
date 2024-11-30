@@ -104,9 +104,6 @@ https://cours.iut-orsay.fr/grade/report/user/index.php?id=3599""")
                             range_cell = row.find("td", class_="column-range")
                             range_value = range_cell.get_text(strip=True) if range_cell else "-"
 
-                            if "Analyse de l'évaluation" in grade:
-                                grade = grade.replace("Analyse de l'évaluation", "").strip()
-
                             evaluation_name_skips = ["Note finale sur 20", "Note calculéeTotal du cours"]
                             if evaluation_name in evaluation_name_skips:
                                 continue
@@ -116,6 +113,9 @@ https://cours.iut-orsay.fr/grade/report/user/index.php?id=3599""")
 
                             if grade == "-":
                                 continue
+
+                            if "Analyse de l'évaluation" in grade:
+                                grade = grade.replace("Analyse de l'évaluation", "").strip()
 
                             if "Élément manuel" in evaluation_name:
                                 evaluation_name = evaluation_name.replace("Élément manuel", "")
